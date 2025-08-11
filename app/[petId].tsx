@@ -1,10 +1,17 @@
-import { BASE_URL } from "@/api/petsApi";
+import { instance } from "@/api/petsApi";
 import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { Pet } from "@/data/pets";
-import {Stack} from "expo-router";
+import { Stack } from "expo-router";
 
 const PetDetails = () => {
   const { petId } = useLocalSearchParams();
@@ -15,7 +22,7 @@ const PetDetails = () => {
   const getPet = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${BASE_URL}/${petId}`);
+      const res = await instance.get(`/${petId}`);
       const data = res.data as Pet;
       setPet(data);
     } catch (error) {
@@ -30,7 +37,7 @@ const PetDetails = () => {
 
   const deletePet = async (petId: number) => {
     try {
-      await axios.delete(`${BASE_URL}/${petId}`);
+      await instance.delete(`/${petId}`);
       router.back();
       return true;
     } catch (error) {
@@ -39,7 +46,7 @@ const PetDetails = () => {
   };
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{title:pet?.name || "Pet Details"}}/>
+      <Stack.Screen options={{ title: pet?.name || "Pet Details" }} />
       {loading && <ActivityIndicator size="large" />}
       {error && <Text>An Error occurred, try again later</Text>}
       {pet && (
@@ -60,7 +67,6 @@ const PetDetails = () => {
           </TouchableOpacity>
         )}
       </View>
-      
     </View>
   );
 };

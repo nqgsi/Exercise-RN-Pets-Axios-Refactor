@@ -1,3 +1,9 @@
-const BASE_URL = "https://pets-react-query-backend.eapi.joincoded.com/pets";
+import axois from "axios";
 
-export { BASE_URL };
+export const instance = axois.create({
+  baseURL: "https://pets-react-query-backend.eapi.joincoded.com",
+});
+export const TakePets = async () => {
+  const response = await instance.get("/pets");
+  return response.data;
+};
