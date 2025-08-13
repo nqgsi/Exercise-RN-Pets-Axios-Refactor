@@ -1,4 +1,4 @@
-import { instance } from "@/api/petsApi";
+import { Deletepets, instance } from "@/api/petsApi";
 import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Pet } from "@/data/pets";
 import { Stack } from "expo-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const PetDetails = () => {
   const { petId } = useLocalSearchParams();
@@ -35,14 +36,17 @@ const PetDetails = () => {
     getPet();
   }, []);
 
+  const query = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationKey: ["delete"],
+    mutationFn: Deletepets,
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["PetsQuery"] });
+    },
+  });
   const deletePet = async (petId: number) => {
-    try {
-      await instance.delete(`/${petId}`);
-      router.back();
-      return true;
-    } catch (error) {
-      return false;
-    }
+    mutate(petId);
   };
   return (
     <View style={styles.container}>
@@ -59,10 +63,7 @@ const PetDetails = () => {
 
       <View>
         {pet && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => deletePet(pet?.id)}
-          >
+          <TouchableOpacity style={styles.button} onPress={() => deletePet}>
             <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>
         )}

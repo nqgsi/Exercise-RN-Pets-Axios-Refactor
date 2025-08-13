@@ -9,10 +9,15 @@ import {
   StyleSheet,
 } from "react-native";
 import { router } from "expo-router";
-import { instance } from "@/api/petsApi";
+import { Deletepets, instance, Postpet } from "@/api/petsApi";
 import axios from "axios";
 import { AddPets } from "@/api/PetFunc";
 import { Pet } from "@/data/pets";
+import {
+  mutationOptions,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 interface NewPet {
   name: string;
@@ -45,6 +50,18 @@ const AddPet = () => {
     }
   };
 
+  const queryClient = useQueryClient();
+  const { data, mutate } = useMutation({
+    mutationKey: ["post"],
+    mutationFn: Postpet,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["PetsQuery"] });
+    },
+  });
+
+  const postbutton = () => {
+    mutate(newPet);
+  };
   return (
     <ScrollView
       contentContainerStyle={styles.container}
